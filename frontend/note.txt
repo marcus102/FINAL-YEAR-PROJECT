@@ -1,0 +1,148 @@
+import { StyleSheet, View, Text } from "react-native";
+
+export default function ErrorTextMessage() {
+  return(
+    pass
+  );
+}
+
+const styles = StyleSheet.create({
+
+});
+
+
+else if (["PSO9"].includes(id)) {
+      function logout() {
+        setIsLoading(true);
+        try {
+          dataContext.Logout();
+          setIsLoading(false);
+        } catch (error) {
+          setMessageId("LP8");
+          setIsLoading(false);
+        }
+      }
+      logout();
+    }
+
+
+
+
+
+import { useState, useRef } from "react";
+import { StyleSheet, FlatList, View, Animated } from "react-native";
+
+import OptionsDetails from "../components/OptionDetails/OptionsDetails";
+import SubOptionsDetails from "../components/OptionDetails/SubOptionsDetails";
+import Colors from "../constants/colors";
+import { MENU_OPTIONS } from "../data/allData";
+
+export default function MenuScreen() {
+  const [displayContent, setDisplayContent] = useState(null);
+  const [prevDisplayContent, setPrevDisplayContent] = useState(null);
+  const animationControlers = useRef(
+    MENU_OPTIONS.map(() => new Animated.Value(0))
+  ).current;
+  
+  function renderMenu({item, index}) {
+
+    const toggleListItem = () => {
+      const config = {
+        duration: 200,
+        toValue: index === displayContent ? 0 : 1,
+        useNativeDriver: true
+      };
+
+      Animated.timing(animationControlers[index], config).start();
+      if (index === displayContent) {
+        setDisplayContent(null);
+      } else {
+        if (prevDisplayContent !== null ) {
+          if (prevDisplayContent === index){
+          setPrevDisplayContent(null);
+        } else {
+          Animated.timing(animationControlers[prevDisplayContent], {
+            duration: 200,
+            toValue: 0,
+            useNativeDriver: true
+          }).start();
+        }}
+        setPrevDisplayContent(index);
+        setDisplayContent(index);
+      }
+    };
+
+    const arrowTransform = animationControlers[index].interpolate({
+      inputRange: [0, 1],
+      outputRange :['0deg', '90deg']
+    });
+
+    return (
+      <View style={styles.mainContainer}>
+        <View style={styles.options}>
+          <OptionsDetails  onPress={toggleListItem} animatedView={{transform:[{rotateZ: arrowTransform}]} }>
+            {item.title}
+          </OptionsDetails>
+        </View>
+      {index === displayContent && ( 
+        <View style={styles.subOptions}>
+          <SubOptionsDetails>options</SubOptionsDetails>
+          <SubOptionsDetails>options</SubOptionsDetails>
+        </View>)}
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={MENU_OPTIONS}
+      key={(item) => item.id.toString()}
+      renderItem={renderMenu}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  mainContainer:{
+  flex: 1,
+  // backgroundColor: '#ffffff',
+  borderWidth: 0,
+  borderColor: '#000000',
+  borderRadius: 10,
+  marginHorizontal: 5,
+  marginVertical: 2,
+ },
+ options:{
+  flex: 1,
+  borderBottomWidth: 0,
+  borderBottomColor: '#000000',
+  backgroundColor: '#ffffff',
+  borderRadius: 5,
+  paddingHorizontal: 5,
+ },
+ subOptions:{
+  flex: 1,
+  backgroundColor: '#ffffff',
+  borderRadius: 10,
+  paddingHorizontal: 15,
+  paddingVertical: 15,
+  marginHorizontal: 2,
+  marginTop: 5,
+ }
+});
+
+
+
+
+
+  // function starsRatingSystemHandler(starKey) {
+  //   const newStarIsActive = {...starIsActive};
+  //   Object.keys(newStarIsActive).forEach(key => {
+  //     if (key === starKey) {
+  //       newStarIsActive[key].isActive = true;
+  //     } else {
+  //       newStarIsActive[key].isActive = false;
+  //     }
+  //   });
+  //   setStarIsActive(newStarIsActive);
+  // }
