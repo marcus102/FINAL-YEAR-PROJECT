@@ -1,0 +1,12 @@
+path: C:\Coding\Test-Image-Data #dataset root dir
+train: images
+val: images
+
+
+#classes
+
+names: 
+  0: Boy( Human )
+  1: Girl( Human )
+  2: Man( Human )
+  3: Woman( Human )
