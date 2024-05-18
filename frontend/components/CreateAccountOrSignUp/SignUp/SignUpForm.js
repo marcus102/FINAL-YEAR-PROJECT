@@ -16,6 +16,7 @@ import { createUser } from '../../../HTTP Requests/UserRegistrationHttp';
 import Animated, { FadeIn, SlideInRight, SlideOutRight } from 'react-native-reanimated';
 import Text_ from '../../Text/Text';
 import NotificationMessageOverlay from '../../../util/NotificationMessageOverlay';
+import LoadingOverlay from '../../../util/LoadingPage';
 
 export default function SignUpForm() {
   const [switchFormContent, setSwitchFormContent] = useState(false);
@@ -234,7 +235,7 @@ export default function SignUpForm() {
                   onChangeText={inputChangedHandler.bind(this, 'surname')}
                   value={inputs.surname.value}
                   children={data.formTitle}
-                  inputContainerStyle={formIsInvalid && styles.invalidInput}
+                  input_IconStyle={formIsInvalid && styles.invalidInput}
                   textStyle={formIsInvalid && styles.invalidInputTitle}
                   onPressIn={hintHandler.bind(this, 'close')}
                   // keyboardType={}

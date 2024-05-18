@@ -1,8 +1,7 @@
 import { useContext, useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-
 import { ImageRecognition } from '../HTTP Requests/ImageRecognition';
 import CameraButton from './CameraButtons';
 import Colors from '../constants/colors';
@@ -10,18 +9,30 @@ import { ManagmentSystem } from '../store/AppGeneralManagmentSystem';
 import Text_ from '../components/Text/Text';
 
 export default function MainCamera() {
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
+  const [type, setType] = useState('back');
+  const [flash, setFlash] = useState('off');
   const cameraRef = useRef(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [hasGalleryPermission, setHasGalleryPermission] = useState();
 
   const dataContext = useContext(ManagmentSystem);
 
   useEffect(() => {
     (async () => {
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === 'granted');
+      if (!permission) {
+        // Camera permissions are still loading.
+        return <View />;
+      }
+
+      if (!permission.granted) {
+        // Camera permissions are not granted yet.
+        return (
+          <View style={styles.container}>
+            <Text_ children={'We need your permission to show the camera'} />
+            <Button onPress={requestPermission} title="grant permission" />
+          </View>
+        );
+      }
     })();
   }, []);
 
@@ -105,30 +116,30 @@ export default function MainCamera() {
     }
   }
 
-  if (hasCameraPermission === false) {
-    return <Text_ children={'No Access To The Camera'} />;
-  }
+  // if (hasCameraPermission === false) {
+  //   return <Text_ children={'No Access To The Camera'} />;
+  // }
 
   if (hasGalleryPermission === false) {
     return <Text_ children={'No Access To The Gallery'} />;
   }
 
   return (
-    <Camera style={styles.camera} type={type} flashMode={flash} ref={cameraRef}>
+    <CameraView style={styles.camera} facing={type} flash={flash} ref={cameraRef}>
       <View style={styles.button2Container}>
         <CameraButton
           size={28}
           icon={'retweet'}
           onPress={() => {
-            setType(type === CameraType.back ? CameraType.front : CameraType.back);
+            setType((current) => (current === 'back' ? 'front' : 'back'));
           }}
         />
         <CameraButton
           size={28}
           icon={'flash'}
-          color={flash === Camera.Constants.FlashMode.off ? 'gray' : Colors.light_gray}
+          color={flash === 'off' ? 'gray' : Colors.light_gray}
           onPress={() => {
-            setFlash(flash === Camera.Constants.FlashMode.off ? Camera.Constants.FlashMode.on : Camera.Constants.FlashMode.off);
+            setFlash((current) => (current === 'off' ? 'on' : 'off'));
           }}
         />
       </View>
@@ -138,11 +149,15 @@ export default function MainCamera() {
 
         <CameraButton buttonContainer={styles.choosePicture} icon="image" size={40} onPress={pickImage} />
       </View>
-    </Camera>
+    </CameraView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   camera: {
     flex: 1,
     borderRadius: 20,
